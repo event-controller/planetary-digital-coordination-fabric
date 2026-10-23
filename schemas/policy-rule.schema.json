@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pdcf.foundation/schemas/v0.1/policy-rule.schema.json",
+  "title": "PDCF Policy Evaluation Contract",
+  "description": "Schema enforcing the PDCF policy evaluation calculus: SUBJECT + RESOURCE + ACTION + CONTEXT + CONDITIONS = DECISION.",
+  "type": "object",
+  "required": ["rule_id", "subject", "resource", "action", "decision"],
+  "properties": {
+    "rule_id": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "integer",
+      "default": 100
+    },
+    "subject": {
+      "type": "object",
+      "required": ["actor_type", "identifier"],
+      "properties": {
+        "actor_type": {
+          "type": "string",
+          "enum": ["human", "device", "organization", "service", "ai_agent"]
+        },
+        "identifier": { "type": "string" },
+        "trust_level": { "type": "string" }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "required": ["urn", "classification"],
+      "properties": {
+        "urn": { "type": "string" },
+        "classification": {
+          "type": "string",
+          "enum": ["public", "internal", "restricted", "critical_infrastructure"]
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": ["name", "risk_level"],
+      "properties": {
+        "name": { "type": "string" },
+        "risk_level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "location": { "type": "string" },
+        "network_zone": { "type": "string" },
+        "timestamp_window": {
+          "type": "object",
+          "properties": {
+            "start": { "type": "string", "format": "date-time" },
+            "end": { "type": "string", "format": "date-time" }
+          }
+        }
+      }
+    },
+    "conditions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Dynamic programmatic predicates required for evaluation."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "allow",
+        "deny",
+        "require_confirmation",
+        "allow_temporarily",
+        "allow_under_restricted_conditions",
+        "escalate"
+      ]
+    }
+  }
+}
