@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pdcf.foundation/schemas/v0.1/capability-descriptor.schema.json",
+  "title": "PDCF Node Capability Descriptor",
+  "description": "Standard schema for PDCF nodes advertising available capabilities across the coordination layer.",
+  "type": "object",
+  "required": ["node_id", "attestation_tier", "capabilities"],
+  "properties": {
+    "node_id": {
+      "type": "string",
+      "description": "Unique uniform resource name (URN) identifying the node."
+    },
+    "hardware_state": {
+      "type": "object",
+      "properties": {
+        "architecture": { "type": "string" },
+        "secure_enclave": { "type": "boolean" },
+        "network_interfaces": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "attestation_tier": {
+      "type": "string",
+      "enum": ["none", "software_signed", "hardware_attested", "isolated_enclave"],
+      "description": "Cryptographic attestation level of the host node."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "safety_level", "parameters"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Dot-notated namespace identifier (e.g. climate.set, telemetry.read)."
+          },
+          "safety_level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4,
+            "description": "PDCF Risk Tier (0: Informational, 1: Reversible Digital, 2: Persistent Digital, 3: Physical-World, 4: High-Consequence)."
+          },
+          "parameters": {
+            "type": "object",
+            "description": "JSON Schema object defining valid input arguments for this capability."
+          },
+          "required_policy": {
+            "type": "string",
+            "description": "Identifier of the baseline policy governing invocation."
+          }
+        }
+      }
+    }
+  }
+}
